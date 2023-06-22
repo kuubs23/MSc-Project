@@ -1,4 +1,4 @@
-"Kübra Version"
+"Kübra Version."
 
 import sys
 sys.path.append('../../..')
