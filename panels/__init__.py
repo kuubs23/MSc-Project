@@ -15,5 +15,6 @@ available in this package.
     :members:
 
 """
+
 from .version import __version__
 from .shell import Shell
