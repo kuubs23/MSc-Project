@@ -10,10 +10,13 @@ from panels.plot_shell import plot_shell
 
 import matplotlib.pyplot as plt
 
+from panels.legendre_gauss_quadrature import get_points_weights
+
+
 
 def test_nonlinear():
-    m = 6
-    n = 6
+    m = 12
+    n = 12
     for model in [
             'plate_clpt_donnell_bardell',
             'cylshell_clpt_donnell_bardell',
@@ -23,42 +26,42 @@ def test_nonlinear():
 
         s.model = model
         s.x1u = 0 
-        s.x2u = 1
+        s.x2u = 0
 
-        s.x1v = 1
-        s.x2v = 1
+        s.x1v = 0
+        s.x2v = 0
 
         s.x1w = 0
         s.x1wr = 1
         s.x2w = 0
         s.x2wr = 1
 
-        s.y1u = 1
-        s.y2u = 1
+        s.y1u = 0
+        s.y2u = 0
 
-        s.y1v = 1
-        s.y2v = 1
+        s.y1v = 0
+        s.y2v = 0
 
         s.y1w = 0
         s.y1wr = 1
         s.y2w = 0
         s.y2wr = 1
 
-        s.a = 4.
-        s.b = 1.
+        s.a = 500
+        s.b = 250
         s.r = 1.e15
-        s.stack = [90, 0, 90, 0]
-        s.plyt = 1e-3*0.125
-        E11 = 142.5e9
-        E22 = E11/20
-        G12 = G13 = G23 = 0.5*E22
-        s.laminaprop = (E11, E22, 0.25, G12, G12, G12)
+        s.stack = [0, 90, -45, +45, +45, -45, 90, 0]
+        s.plyt = 0.125
+        E11 = 142.5e3
+        E22 = 8.7e3
+        G12 = G13 = G23 = 5.1e3
+        s.laminaprop = (E11, E22, 0.28, G12, G12, G12)
         s.m = m
         s.n = n
         s.nx = 2*m - 1 # NOTE integration points over x
         s.ny = 2*n - 1 # NOTE integration points over y
 
-        print(s.nx, s.ny)
+        # print(s.nx, s.ny)
 
         load = 700
         Nxx = load/s.b
@@ -84,11 +87,13 @@ def test_nonlinear():
         #initial
         fext = s.calc_fext()
 
-        print("fext is ", fext.shape)
+        # print('  fext', fext)   
+
+        # print("fext is ", fext.shape)
 
         c0 = solve(s.calc_kC(), fext, silent=True)
         plot_mesh, fields = s.uvw(c=c0)
-        # print('  linear wmax', fields['w'].max())
+        print('  linear wmax', fields['w'].max())
         # assert np.isclose(fields['w'].max(), 0.0026277, rtol=0.01)
 
         count = 0
@@ -115,12 +120,14 @@ def test_nonlinear():
             ci = c.copy()
             if count > 1000:
                 raise RuntimeError('Not converged!')
+            
+        # print(fint)
 
         plot_mesh, fields = s.uvw(c=c)
         # print('  nonlinear wmax', fields['w'].max())
         # assert np.isclose(fields['w'].max(), 0.10794, rtol=0.01)
-        # plot_shell(s, c, vec='w', title='linear', filename='nonLinear.png')
-        print(KT.shape)
+        plot_shell(s, c, vec='w', title='linear', filename='nonLinear.png')
+        # print(KT.shape)
   
 if __name__ == '__main__':
     test_nonlinear()
