@@ -26,4 +26,7 @@ def test_lb_orthotropic():
     s.Nxy = -1
 
     eigvals, eigvecs = lb(s.calc_kC(), s.calc_kG(), silent=True)
-    plot_shell(s, eigvecs[:, 0], vec='w')
+    plot_shell(s, eigvecs[:, 1], vec='w')
+
+if __name__ == '__main__':
+    test_lb_orthotropic()

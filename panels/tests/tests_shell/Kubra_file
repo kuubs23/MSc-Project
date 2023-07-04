@@ -1,0 +1,56 @@
+"Kübra Version"
+
+import numpy as np
+from structsolve import lb
+import matplotlib
+
+from panels import Shell
+from panels.plot_shell import plot_shell
+from panels.legendre_gauss_quadrature import get_points_weights
+
+# Linear Buckling
+
+def test_lb():
+    #NOTE ssss boundary conditions by default
+    s = Shell()
+    s.m = 12
+    s.n = 12
+    s.stack = [0, 0, 0, 0, 0, 0, 0, 0]
+    s.plyt = 0.125
+    s.laminaprop = (150e3, 9.08e3, 0.32, 5.29e3,  5.29e3,  5.29e3)
+    s.model = 'cylshell_clpt_donnell_bardell'
+    s.a = 900
+    s.b = 300
+    # radius
+    s.r = 1.15e13
+
+    # compression
+    s.Nxx = -1
+    # shear
+    s.Nxy = 0
+
+    eigvals, eigvecs = lb(s.calc_kC(), s.calc_kG(), silent=False)
+    plot_shell(s, eigvecs[:, 0], vec='w')
+
+if __name__ == '__main__':
+    test_lb()
+
+n = 3
+
+points = np.empty(n, dtype=np.double)
+weights = np.empty(n, dtype=np.double)
+
+print(get_points_weights(n, points, weights))
+
+# def test_nonLB()
+    
+#         s.model = model
+#         s.x1u, s.x2u  = 0,0 # displacement is zero
+#         s.x1v, s.x2v = 0,0
+#         s.x1w, s.x2w = 0,0
+#         s.x1wr, s.x2wr  = 1,1
+
+#         s.y1u, s.y2u  = 0,0
+#         s.y1v, s.y2v = 0,0
+#         s.y1w, s.y2w = 0,0
+#         s.y1wr, s.y2wr = 1,1 # free to rotate
